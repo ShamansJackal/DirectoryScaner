@@ -1,31 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DirectoryScanner.Core.Struct
+﻿namespace DirectoryScanner.Core.Struct
 {
     public sealed class DirectoryNode : Node
     {
-        public bool IsComplited = false;
+        public bool IsComplited
+        {
+            get => _isComplited;
+            set
+            {
+                _isComplited = value;
+                OnPropertyChanged(nameof(FormatedSize));
+                OnPropertyChanged(nameof(Childs));
+                OnPropertyChanged(nameof(FormatedPercent));
+            }
+        }
 
-        public IEnumerable<Node> Childs => _childs;
+        public IEnumerable<Node> Childs
+        {
+            get => _childs;
+            set {
+                _childs = value;
+                OnPropertyChanged(nameof(Childs));
+            }
+        }
 
-        private List<Node> _childs = new();
+        private IEnumerable<Node> _childs;
+        private bool _isComplited = false;
 
         public DirectoryNode(string path, DirectoryNode? directoryNode) : base(path, directoryNode)
         {
         }
 
         public override long? Size => IsComplited && Childs.All(x => x.Size.HasValue) ? Childs.Sum(x => x.Size) : null;
-
-        public void Add(Node node)
-        {
-            _childs.Add(node);
-            OnPropertyChanged(nameof(Size));
-            OnPropertyChanged(nameof(Childs));
-            OnPropertyChanged(nameof(Percent));
-        }
     }
 }

@@ -14,7 +14,7 @@ namespace DirectoryScanner.Core.Struct
     {
         public abstract long? Size { get; }
 
-        public bool HasChilds => this is DirectoryNode;
+        public string FormatedSize => Size.HasValue ? $"Size {Size.Value}" : "Size -";
 
         public string Name => Path.GetFileName(Fullpath);
 
@@ -28,13 +28,19 @@ namespace DirectoryScanner.Core.Struct
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        public float? Percent => Parent != null && Parent.Size.HasValue ? Size / Parent.Size : null;
+        public float? Percent => Parent != null && Parent.Size.HasValue ? Size / ((float)Parent.Size) : null;
+
+        public string FormatedPercent => Percent.HasValue ? $"Percent {Percent.Value:0.00}%" : "Percent -";
 
         public Node(string path, DirectoryNode? directoryNode)
         {
             Fullpath = path;
             Parent = directoryNode;
-            PropertyChanged += Parent?.PropertyChanged;
+            if(Parent != null)
+            {
+                PropertyChanged += (x,y) => Parent.OnPropertyChanged(y.PropertyName);
+            }
+           
         }
     }
 }

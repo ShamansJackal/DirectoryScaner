@@ -9,8 +9,6 @@ namespace DirectoryScanner.Core.Struct
     public sealed class FileNode : Node
     {
         private readonly long _size;
-
-        public IEnumerable<Node> Childs => new List<Node>();
         public FileNode(string path, long size, DirectoryNode parent) : base(path, parent)
         {
             _size = size;

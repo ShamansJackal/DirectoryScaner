@@ -4,30 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DirectoryScaner.WPF"
+        xmlns:model="clr-namespace:DirectoryScanner.Core.Struct;assembly=DirectoryScanner.Core"
         mc:Ignorable="d"
+        x:Name="UI"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Border BorderBrush="Black" BorderThickness="2" Background="Azure" Margin="4, 4, 4,46" Padding="4">
             <ScrollViewer>
                 <StackPanel x:Name="exlporer">
                     <TreeView x:Name="treeView1">
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Childs}">
-                                <HierarchicalDataTemplate.ItemContainerStyle>
-                                    <Style >
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding HasChilds}" Value="true">
-                                                <Setter Property="TreeViewItem.Foreground" Value="Chartreuse" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding HasChilds}" Value="false">
-                                                <Setter Property="TreeViewItem.Foreground" Value="Crimson" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </HierarchicalDataTemplate.ItemContainerStyle>
-                                <TextBlock Text="{Binding Name}"/>
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate  DataType="{x:Type model:DirectoryNode}" ItemsSource="{Binding Childs}">
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />-->
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text=" [" Foreground="Blue" />
+                                    <TextBlock Text="{Binding Childs.Count}" Foreground="Green" />
+                                    <TextBlock Text="]  " Foreground="Blue" />
+                                    <TextBlock Text="{Binding FormatedSize}" Foreground="Green" />
+                                    <TextBlock Text="  " Foreground="Green" />
+                                    <TextBlock Text="{Binding FormatedPercent}" Foreground="Green" />                                    
+                                </StackPanel>
                             </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type model:FileNode}">
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<Image Source="/WpfTutorialSamples;component/Images/user.png" Margin="0,0,5,0" />-->
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="  " Foreground="Green" />
+                                    <TextBlock Text="{Binding FormatedSize}" Foreground="Green" />
+                                    <TextBlock Text="  " Foreground="Green" />
+                                    <TextBlock Text="{Binding FormatedPercent}" Foreground="Green" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </TreeView.Resources>
                     </TreeView>
                 </StackPanel>
             </ScrollViewer>
