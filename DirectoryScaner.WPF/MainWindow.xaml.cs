@@ -29,11 +29,11 @@ namespace DirectoryScaner.WPF
         {
             InitializeComponent();
 
-            Scanner scanner = new Scanner(4, @"D:\Учеба\5 сем\GBA");
-            treeView1.ItemsSource = scanner.Root.Childs;
-
-            Thread thread = new Thread(x => scanner.StartProcess());
+            Scanner scanner = new Scanner(4, @"D:\Учеба\5 сем\НПО");
+            treeView1.ItemsSource = new ObservableCollection<Node>(){ scanner.Root};
+            Thread thread = new(() => scanner.StartProcess());
             thread.Start();
+
         }
 
         private void InputFile_Click(object sender, RoutedEventArgs e)

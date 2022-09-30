@@ -10,11 +10,11 @@ namespace DirectoryScanner.Core.Struct
     {
         public bool IsComplited = false;
 
-        public IReadOnlyCollection<Node> Childs => _childs;
+        public IEnumerable<Node> Childs => _childs;
 
         private List<Node> _childs = new();
 
-        public DirectoryNode(string path) : base(path)
+        public DirectoryNode(string path, DirectoryNode? directoryNode) : base(path, directoryNode)
         {
         }
 

@@ -30,9 +30,10 @@ namespace DirectoryScanner.Core.Struct
 
         public float? Percent => Parent != null && Parent.Size.HasValue ? Size / Parent.Size : null;
 
-        public Node(string path)
+        public Node(string path, DirectoryNode? directoryNode)
         {
             Fullpath = path;
+            Parent = directoryNode;
             PropertyChanged += Parent?.PropertyChanged;
         }
     }

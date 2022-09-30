@@ -15,8 +15,6 @@
                             <HierarchicalDataTemplate ItemsSource="{Binding Childs}">
                                 <HierarchicalDataTemplate.ItemContainerStyle>
                                     <Style >
-                                        <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                        <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding HasChilds}" Value="true">
                                                 <Setter Property="TreeViewItem.Foreground" Value="Chartreuse" />

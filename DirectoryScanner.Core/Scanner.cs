@@ -7,6 +7,7 @@ namespace DirectoryScanner.Core
     {
         private uint _threadCount;
         private Semaphore _semaphore;
+        private ConcurrentDictionary<Thread, int> _threads = new();
 
         public readonly DirectoryNode Root;
 
@@ -16,28 +17,25 @@ namespace DirectoryScanner.Core
         {
             _threadCount = threadCount;
             _semaphore = new Semaphore((int)threadCount, (int)threadCount);
-            Root = new DirectoryNode(path);
+            Root = new DirectoryNode(path, null);
             _queqe.Enqueue(Root);
         }
 
         public void StartProcess()
         {
-            while (_queqe.Any())
+            while (_queqe.Any() || _threads.Any())
             {
-                try
+                _semaphore.WaitOne();
+                if (_queqe.TryDequeue(out DirectoryNode directory))
                 {
-                    _semaphore.WaitOne();
-                    if (_queqe.TryDequeue(out DirectoryNode directory))
-                    {
-                        Thread thread = new(obj => ScanNode((DirectoryNode)obj));
-                        thread.Start(directory);
-                    }
-                    _semaphore.Release();
-                }catch(Exception ex)
-                {
-                    int i = 5;
+                    Thread thread = new(obj => ScanNode((DirectoryNode)obj));
+                    _threads[thread] = thread.ManagedThreadId;
+                    thread.Start(directory);
                 }
+                _semaphore.Release();
             }
+
+            Thread.Sleep(5000);
         }
 
         private void ScanNode(DirectoryNode node)
@@ -46,19 +44,21 @@ namespace DirectoryScanner.Core
             var dir = new DirectoryInfo(node.Fullpath);
             foreach (var subDir in dir.EnumerateDirectories())
             {
-                var subNode = new DirectoryNode(subDir.FullName);
+                var subNode = new DirectoryNode(subDir.FullName, node);
                 _queqe.Enqueue(subNode);
 
                 node.Add(subNode);
+                Thread.Sleep(5000);
             }
 
             foreach (var file in dir.EnumerateFiles())
             {
                 Thread.Sleep(5000);
-                node.Add(new FileNode(file.FullName, file.Length));
+                node.Add(new FileNode(file.FullName, file.Length, node));
             }
 
             node.IsComplited = true;
+            _threads.TryRemove(new (Thread.CurrentThread, Environment.CurrentManagedThreadId));
             _semaphore.Release();
         } 
     }
